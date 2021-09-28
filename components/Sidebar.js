@@ -11,6 +11,9 @@ function Sidebar() {
       "Enter an email address for the user you want to chat with"
     );
     if (!input) return;
+
+    if (EmailValidator.validate(input)) {
+    }
   };
   return (
     <Container>
