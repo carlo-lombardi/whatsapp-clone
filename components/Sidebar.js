@@ -4,21 +4,49 @@ import { GiBalaclava } from "react-icons/Gi";
 import { FiMoreVertical } from "react-icons/Fi";
 import { BsSearch } from "react-icons/Bs";
 import * as EmailValidator from "email-validator";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { useCollection } from "react-firebase-hooks/firestore";
+import { authentication, chatsDataBase } from "../firebase.config";
+import { doc, setDoc, query, where } from "firebase/firestore";
 
 function Sidebar() {
+  const [user] = useAuthState(authentication);
+  const userChatRef = query(
+    chatsDataBase,
+    where("users", "array-contains", user.email)
+  );
+  const [chatsSnapshot] = useCollection(userChatRef);
   const createChat = () => {
     const input = prompt(
       "Enter an email address for the user you want to chat with"
     );
     if (!input) return;
 
-    if (EmailValidator.validate(input)) {
+    if (
+      EmailValidator.validate(input) &&
+      !chatAlreadyExists(input) &&
+      input !== user.email
+    ) {
+      setDoc(
+        doc(chatsDataBase),
+        {
+          users: [user.email, input],
+        },
+        { merge: true }
+      );
     }
+  };
+
+  const chatAlreadyExists = (recipientEmail) => {
+    !!chatsSnapshot?.docs.find(
+      (chat) =>
+        chat.data().users.find((user) => user === recipientEmail)?.length > 0
+    );
   };
   return (
     <Container>
       <Header>
-        <UserAvatar />
+        <UserAvatar onClick={() => authentication.signOut()} />
         <IconsContainer>
           <GrChat />
           <FiMoreVertical />

@@ -1,6 +1,6 @@
 import Head from "next/head";
 import styled from "styled-components";
-import { popPup } from "../firebase";
+import { popPup } from "../firebase.config";
 
 function Login() {
   async function signIn() {
