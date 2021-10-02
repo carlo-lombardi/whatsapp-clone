@@ -7,15 +7,18 @@ import * as EmailValidator from "email-validator";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { authentication, chatsDataBase } from "../firebase.config";
-import { doc, setDoc, query, where } from "firebase/firestore";
+import { doc, setDoc, query, where, getDocs } from "firebase/firestore";
 
 function Sidebar() {
   const [user] = useAuthState(authentication);
-  const userChatRef = query(
-    chatsDataBase,
-    where("users", "array-contains", user.email)
-  );
-  const [chatsSnapshot] = useCollection(userChatRef);
+  // const userChatRef = query(chatsDataBase, where("users", "==", user.email));
+  // const chatsSnapshot = await getDocs((userChatRef))
+
+  const [value, chatsSnapshot, error] = useCollection(chatsDataBase, {
+    email: user.email,
+  });
+  console.log("chatsSnapshot", chatsSnapshot);
+
   const createChat = () => {
     const input = prompt(
       "Enter an email address for the user you want to chat with"
