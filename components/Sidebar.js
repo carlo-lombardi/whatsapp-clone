@@ -6,19 +6,27 @@ import { BsSearch } from "react-icons/Bs";
 import * as EmailValidator from "email-validator";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useCollection } from "react-firebase-hooks/firestore";
-import { authentication, chatsDataBase } from "../firebase.config";
-import { doc, setDoc, query, where, getDocs } from "firebase/firestore";
+import {
+  authentication,
+  chatsDataBase,
+  usersDataBase,
+} from "../firebase.config";
+import {
+  doc,
+  setDoc,
+  query,
+  where,
+  getDocs,
+  orderBy,
+  onSnapshot,
+  limit,
+} from "firebase/firestore";
+import { useEffect, useState } from "react";
 
+// const chatsSnapshot = await getDocs((userChatRef))
 function Sidebar() {
+  const [newData, setNewData] = useState();
   const [user] = useAuthState(authentication);
-  // const userChatRef = query(chatsDataBase, where("users", "==", user.email));
-  // const chatsSnapshot = await getDocs((userChatRef))
-
-  const [value, chatsSnapshot, error] = useCollection(chatsDataBase, {
-    email: user.email,
-  });
-  console.log("chatsSnapshot", chatsSnapshot);
-
   const createChat = () => {
     const input = prompt(
       "Enter an email address for the user you want to chat with"
@@ -39,12 +47,22 @@ function Sidebar() {
       );
     }
   };
+  // const userChatRef = query(chatsDataBase, where("users", "==", user.email));
+  useEffect(() => {
+    fetchTheDoc();
+  }, []);
+
+  async function fetchTheDoc() {
+    const querySnapshot = await getDocs(chatsDataBase);
+    querySnapshot.forEach((doc) => {
+      setNewData(doc.data());
+    });
+  }
 
   const chatAlreadyExists = (recipientEmail) => {
-    !!chatsSnapshot?.docs.find(
-      (chat) =>
-        chat.data().users.find((user) => user === recipientEmail)?.length > 0
-    );
+    const boolAns =
+      newData?.users.find((user) => user === recipientEmail)?.length > 0;
+    return boolAns;
   };
   return (
     <Container>
