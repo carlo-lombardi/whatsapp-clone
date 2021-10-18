@@ -1,6 +1,4 @@
-import * as firebase from "firebase/app";
-import { getFirestore, collection } from "firebase/firestore";
-import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import firebase from "firebase";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCbNXfJM6cuu4bPeTOt34wntt5FIiKPmMo",
@@ -12,35 +10,12 @@ const firebaseConfig = {
   measurementId: "G-E2D7BFN9Z5",
 };
 
-const app = !firebase.getApps.length
+const app = !firebase.apps.length
   ? firebase.initializeApp(firebaseConfig)
-  : firebase.getApp();
-const db = getFirestore(app);
-const usersDataBase = collection(db, "users");
-const chatsDataBase = collection(db, "chats");
-const authentication = getAuth(app);
-const provider = new GoogleAuthProvider();
-const popPup = () =>
-  signInWithPopup(authentication, provider)
-    .then((result) => {
-      const credential = GoogleAuthProvider.credentialFromResult(result);
-      console.log("que carajo es esto", credential);
-      const token = credential.accessToken;
-      const user = result.user;
-      return user;
-    })
-    .catch((error) => {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      const email = error.email;
-      const credential = GoogleAuthProvider.credentialFromError(error);
-    });
-export {
-  authentication,
-  provider,
-  popPup,
-  db,
-  app,
-  usersDataBase,
-  chatsDataBase,
-};
+  : firebase.app();
+
+const db = app.firestore();
+const auth = app.auth();
+const provider = new firebase.auth.GoogleAuthProvider();
+
+export { db, auth, provider };
