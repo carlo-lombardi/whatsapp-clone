@@ -8,6 +8,7 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { useCollection } from "react-firebase-hooks/firestore";
 import { auth, db } from "../firebase.config";
 import Chat from "./Chat";
+import { Avatar } from "@material-ui/core";
 function Sidebar() {
   const [user] = useAuthState(auth);
   const userChatRef = db
@@ -41,7 +42,7 @@ function Sidebar() {
   return (
     <Container>
       <Header>
-        <UserAvatar onClick={() => auth.signOut()} />
+        <UserAvatar src={user.photoURL} onClick={() => auth.signOut()} />
         <IconsContainer>
           <GrChat />
           <FiMoreVertical />
@@ -74,7 +75,7 @@ const Header = styled.div`
   border-bottom: 1px solid whitesmoke;
 `;
 
-const UserAvatar = styled(GiBalaclava)`
+const UserAvatar = styled(Avatar)`
   cursor: pointer;
 
   :hover {
